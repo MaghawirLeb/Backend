@@ -3,3 +3,5 @@ CREATE TABLE IF NOT EXISTS `AccountPhoto` (
   `AccountId`      INT          NOT NULL,
   `FileName`       VARCHAR(100) NOT NULL
 )
+  CHARACTER SET UTF8
+  ENGINE INNODB
