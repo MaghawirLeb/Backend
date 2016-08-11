@@ -1,5 +1,7 @@
 <?php
 
+error_reporting(0);
+
 class MySql
 {
     const MYSQL_SERVER = "127.0.0.1";
@@ -17,31 +19,43 @@ class MySql
             $close = true;
         }
 
-        $stmt = $mysqli->prepare($query);
-        if (!empty($param_array)) {
-            call_user_func_array(array($stmt, "bind_param"), $param_array);
-        }
-        $stmt->execute();
+        try {
 
-        $res = $stmt->get_result();
-
-        if ($res) {
-            while ($row = $res->fetch_array(MYSQLI_ASSOC)) {
-                $rows[] = $row;
+            $stmt = $mysqli->prepare($query);
+            if (!$stmt) {
+                throw new Exception($mysqli->error);
             }
-            $res->free_result();
-        }
 
-        $stmt->close();
-        if ($close) {
-            $mysqli->close();
-        }
+            if (!empty($param_array)) {
+                call_user_func_array(array($stmt, "bind_param"), $param_array);
+            }
 
-        return $rows;
+            if ($stmt->execute()) {
+                $res = $stmt->get_result();
+
+                if ($res) {
+                    while ($row = $res->fetch_array(MYSQLI_ASSOC)) {
+                        $rows[] = $row;
+                    }
+                    $res->free_result();
+                }
+
+                $stmt->close();
+            }
+
+            return $rows;
+
+        } finally {
+            if ($close) {
+                $mysqli->close();
+            }
+        }
     }
 
     public static function OpenConnection() : mysqli
     {
-        return new mysqli(self::MYSQL_SERVER, self::MYSQL_USER, self::MYSQL_PASS, self::MYSQL_DB);
+        $mysqli = new mysqli(self::MYSQL_SERVER, self::MYSQL_USER, self::MYSQL_PASS, self::MYSQL_DB);
+        $mysqli->set_charset("utf8");
+        return $mysqli;
     }
 }
