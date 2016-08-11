@@ -1,5 +1,8 @@
 <?php
 
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json");
+
 require("resources/library/classes.php");
 
 $method = $_SERVER["REQUEST_METHOD"];
@@ -37,13 +40,14 @@ function Get($path, $get)
         }
 
         if ($target === 'id') {
-            $accountId = array_shift($request);
-            if ($accountId != null) {
-                $controller->Get($accountId + 0);
+            $recordId = array_shift($request);
+            if ($recordId != null) {
+                $controller->Get($recordId + 0);
                 return;
             }
         }
     }
 
+    http_response_code(400);
     echo(json_encode(array('message' => 'invalid request')));
 }
