@@ -11,28 +11,39 @@ abstract class BaseController
 
     public function GetAll(array $criteria)
     {
-        $query = 'SELECT * FROM ' . static::GetTableName();
+        $table_name = static::GetTableName();
+
+        $table_columns = [];
+        try {
+            $column_info = MySql::Select("SHOW COLUMNS FROM `$table_name`");
+            foreach($column_info as $ci) {
+                $table_columns[] = $ci["Field"];
+            }
+            unset($column_info);
+        } catch (Exception $ignored) {
+        }
+
+        $query = "SELECT * FROM `$table_name`";
         $params = [];
 
         if (!empty($criteria)) {
-            $where_clause = ' WHERE ';
+            $where_clause = null;
             $types = '';
             foreach ($criteria as $column => $value) {
-                $where_clause .= "`$column` = ? AND ";
-                $types .= 's';
-                $params[] = &$criteria[$column];
+                if (array_search(strtolower($column), array_map('strtolower', $table_columns))) {
+                    if ($where_clause == null) $where_clause = ' WHERE ';
+                    $where_clause .= "`$column` = ? AND ";
+                    $types .= 's';
+                    $params[] = &$criteria[$column];
+                }
             }
-            array_unshift($params, $types);
-            $query .= rtrim($where_clause, 'AND ');
+            if ($where_clause != null) {
+                array_unshift($params, $types);
+                $query .= rtrim($where_clause, 'AND ');
+            }
         }
 
-        try {
-            $matches = MySql::Select($query, $params);
-        } catch (Exception $e) {
-            http_response_code(400);
-            echo(json_encode(array("message" => $e->getMessage())));
-            return;
-        }
+        $matches = MySql::Select($query, $params);
 
         $result = [];
         $entityName = static::GetTableName();
