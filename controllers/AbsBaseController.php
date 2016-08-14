@@ -55,6 +55,34 @@ abstract class BaseController
         echo(json_encode($result, JSON_UNESCAPED_UNICODE));
     }
 
+    public function Create(array $attributes)
+    {
+        $table_name = static::GetTableName();
+        $columns = "`" . implode("`,`", array_keys($attributes)) . "`";
+        $types = implode("", array_fill(0, count($attributes), "s"));
+        $placeholders = implode("", array_fill(0, count($attributes), "?"));
+
+        $query = "INSERT INTO `$table_name` ($columns) VALUES ($placeholders)";
+
+        $params = [$types];
+        foreach ($attributes as $key => $value) {
+            $params[] = &$attributes[$key];
+        }
+
+        $id = MySql::Insert($query, $params);
+
+        http_response_code(200);
+        echo(json_encode(array('Id' => $id)));
+    }
+
+    public function Delete(int $id)
+    {
+        $table_name = static::GetTableName();
+        MySql::Delete($table_name, $id);
+        http_response_code(200);
+        echo(json_encode(array("message" => "success")));
+    }
+
     public abstract function GetTableName();
 
     public abstract function GetKey();
