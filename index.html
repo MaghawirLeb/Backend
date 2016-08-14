@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+
+    <link rel="stylesheet" href="resources/packages/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="resources/library/assets/css/turbo.css">
+
+    <style>
+        html, body {
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .main {
+            height: 100%;
+            width: 100%;
+            background: #dddddd;
+            border: none;
+            box-sizing: border-box;
+            padding-top: 51px;
+        }
+
+        .main iframe {
+            height: 100%;
+            width: 100%;
+            border: none;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Turbo</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="html/forms/account.html" target="main-frame">Accounts</a></li>
+            <li><a href="html/forms/businesstype.html" target="main-frame">Business Types</a></li>
+            <li><a href="html/forms/region.html" target="main-frame">Regions</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="main">
+    <iframe name="main-frame" src="html/forms/account.html"></iframe>
+</div>
+
+<script src="resources/packages/jquery/dist/jquery.js"></script>
+<script src="resources/library/js/turbo.js"></script>
+
+<script>
+    $(".navbar-nav li a").click(function () {
+        if (!$(this).hasClass("active")) {
+            $(this).closest("ul").find("li").removeClass("active");
+            $(this).closest("li").addClass("active");
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Regions</title>
+
+    <link rel="stylesheet" href="../../resources/packages/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="../../resources/packages/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="../../resources/library/assets/css/turbo.css">
+    <style>
+        textarea {
+            resize: none;
+        }
+
+        .scroll {
+            height: 400px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0;
+            margin-top: 15px;
+            background-color: #fafafa !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h3><i class="fa fa-globe" aria-hidden="true"></i> Regions</h3>
+    <div id="inputholder" class="row">
+        <div class="col-lg-12">
+            <label for="name">Name</label>
+            <div class="input-group">
+                <input type="text" name="name" id="name" class="form-control">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" id="add">Add</button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="well scroll">
+        <div class="row">
+            <div class="col-lg-12">
+                <table id="regions" class="table"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../resources/packages/jquery/dist/jquery.js"></script>
+<script src="../../resources/packages/bootstrap/dist/js/bootstrap.js"></script>
+<script src="../../resources/library/js/turbo.js"></script>
+
+<script>
+    Turbo.ext.tableEdit = function () {
+        alert("edit");
+    };
+
+    Turbo.ext.tableDelete = function() {
+        var id = $(this).data("id");
+        Turbo.form.setFormBusy(true);
+        Turbo.api.delete("region", id).then(function () {
+            var tableData = Turbo.form.data["tableData"];
+            var i = 0, region;
+            while (region = tableData[i++]) {
+                if (region.RegionId === id) {
+                    delete tableData[i - 1];
+                    Turbo.ext.updateTable();
+                    break;
+                }
+            }
+            Turbo.form.setFormBusy(false);
+        });
+    };
+
+    Turbo.ext.updateTable = function () {
+        var fCreate = function (type, content, attribs, events) {
+            var element = $(type, attribs);
+            element.html(content);
+            if (events) {
+                for (var $event in events) {
+                    if (events.hasOwnProperty($event)) {
+                        events[$event] && element.on($event, events[$event]);
+                    }
+                }
+            }
+            return element;
+        };
+
+        var header = $("<thead>");
+        var headerRow = $("<tr>");
+        headerRow.append(fCreate("<th/>", "Label", { class: "col-sm-10" }));
+        headerRow.append(fCreate("<th/>", undefined, { class: "col-sm-1" }));
+        headerRow.append(fCreate("<th/>", undefined, { class: "col-sm-1" }));
+        header.append(headerRow);
+
+        var body = $("<tbody>");
+
+        var tableData;
+        if (Turbo.form.data && (tableData = Turbo.form.data["tableData"])) {
+            var i = 0, region;
+            while (region = tableData[i++]) {
+                var row = $("<tr>");
+                var cell = $("<td>");
+                cell.html(region.Name);
+                row.append(cell);
+                row.append(fCreate("<td/>", fCreate("<button/>", "Edit", { class: "btn btn-xs", 'data-id': region.RegionId }, { click: Turbo.ext.tableEdit })));
+                row.append(fCreate("<td/>", fCreate("<button/>", "Delete", { class: "btn btn-xs", 'data-id': region.RegionId }, { click: Turbo.ext.tableDelete })));
+                body.append(row);
+            }
+        }
+
+        var table = $("#regions");
+        table.empty();
+        table.append(header);
+        table.append(body);
+
+        return true;
+    };
+
+    Turbo.form.setFormBusy(true);
+    Turbo.api.get("region").then(function (results) {
+        Turbo.form.data = {"tableData": results};
+        Turbo.ext.updateTable();
+        Turbo.form.setFormBusy(false);
+    });
+
+    $("button#add").click(function () {
+        var input = $("input#name");
+        var name = input.val().trim();
+        if (name) {
+            Turbo.api.post("region", {Name: name}).then(function (results) {
+                Turbo.form.data["tableData"]
+                && Turbo.form.data["tableData"].push({RegionId: results.Id, Name: name})
+                && Turbo.ext.updateTable()
+                && input.val("");
+            });
+        } else {
+            input.focus();
+        }
+    });
+</script>
+
+</body>
+</html>

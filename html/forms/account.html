@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Accounts</title>
+
+    <link rel="stylesheet" href="../../resources/packages/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="../../resources/packages/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="../../resources/library/assets/css/turbo.css">
+    <style>
+        textarea {
+            resize: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h3><i class="fa fa-briefcase" aria-hidden="true"></i> Accounts</h3>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" class="form-control">
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label for="businesstype">Business Type</label>
+                <select id="businesstype" name="businesstypeid" class="form-control"></select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label for="telephone">Telephone</label>
+                <input type="tel" name="telephone" id="telephone" class="form-control">
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label for="mobile">Mobile</label>
+                <input type="tel" name="mobile" id="mobile" class="form-control">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <label for="address">Address</label>
+                <textarea id="address" name="address" class="form-control" rows="5"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label for="region">Region</label>
+                <select id="region" name="regionid" class="form-control">
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label for="longitude">Longitude</label>
+                <input type="text" id="longitude" name="longitude" class="form-control">
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label for="latitude">Latitude</label>
+                <input type="text" id="latitude" name="latitude" class="form-control">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" class="form-control" rows="6"></textarea>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../resources/packages/jquery/dist/jquery.js"></script>
+<script src="../../resources/packages/bootstrap/dist/js/bootstrap.js"></script>
+<script src="../../resources/library/js/turbo.js"></script>
+
+<script>
+    Turbo.form.setFormBusy(true);
+    Turbo.api.get("region").then(function (results) {
+        var options = "<option value='-1'></option>";
+        var i = 0, result;
+        while (result = results[i++]) {
+            options += ("<option value='" + result.RegionId + "'>" + result.Name + "</option>");
+        }
+        $("#region").html(options);
+        Turbo.form.setFormBusy(false);
+    }, function () {
+        Turbo.form.setFormBusy(false);
+    });
+
+
+    Turbo.form.setFormBusy(true);
+    Turbo.api.get("businesstype").then(function (results) {
+        var options = "<option value='-1'></option>";
+        var i = 0, result;
+        while (result = results[i++]) {
+            options += ("<option value='" + result.BusinessTypeId + "'>" + result.Name + "</option>");
+        }
+        $("#businesstype").html(options);
+        Turbo.form.setFormBusy(false);
+    }, function () {
+        Turbo.form.setFormBusy(false);
+    });
+</script>
+
+</body>
+</html>
