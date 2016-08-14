@@ -1,2 +1,10 @@
 .idea
-assets/photos/*.jpg
+.bowerrc
+bower.json
+assets/photos/*
+node_modules/
+
+resources/packages/*/*
+!resources/packages/*/dist/
+!resources/packages/font-awesome/css
+!resources/packages/font-awesome/fonts
